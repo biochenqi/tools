@@ -33,7 +33,7 @@ class Config():
         self.Email='chenqi@gooalgene.com'
         self.From='bio02' #server num:103|T640|....
         self.To='chenqi'  #your name:handsome chen|super handsome chen|...
-        self.range_time=600 #set how long to send you email:3600|60
+        self.range_time=25 #set how long to send you email:3600|60
 
 class HelpFormatter(argparse.RawDescriptionHelpFormatter, argparse.ArgumentDefaultsHelpFormatter):
     pass
@@ -66,13 +66,28 @@ def show_info(text):
     logging.info(text)
     return now_time
 
-def send_info(infos):
+def pro_bar(now_file,all_file):
+    if all_file>500:
+        all_file=all_file//2
+        now_file=now_file//2
+        return pro_bar(now_file,all_file)
+    else:
+        return now_file,all_file
+
+
+def send_info(infos,now_file,all_file):
     sender = 'from@runoob.com'
-    receivers = [infos.Email]    
-    message = MIMEText('cp still continue!!', 'plain', 'utf-8')
+    now_file,all_file=pro_bar(now_file,all_file)
+    process_look='['+'>'*int(now_file)+'-'*(int(all_file)-int(now_file))+']'
+    subject='''
+cp5check still running!
+{2} {0}/{1} 
+'''.format(now_file,all_file,process_look)
+    receivers = [infos.Email]
+    message = MIMEText(subject, 'plain', 'utf-8')
     message['From'] = Header(infos.From, 'utf-8')
     message['To'] =  Header(infos.To, 'utf-8')
-    message['Subject'] = Header('cp5check still running!', 'utf-8')    
+    message['Subject'] = Header('the status of cp and md5check!', 'utf-8')    
     try:
         smtpObj = smtplib.SMTP('localhost')
         smtpObj.sendmail(sender, receivers, message.as_string())
@@ -162,12 +177,16 @@ def cp_info(dir_in,dir_out,infos,prefix):
     send_log('%s.log'%prefix,infos)
     run_time(begin)
 
-def just_warning(infos):
+def just_warning(infos,dir_in,dir_out):
+    for i in os.popen('find %s -type f|wc -l'%dir_in):
+        all_file=i.strip()
     sta=time.time()
     while 1:
         end=time.time()
         if end-sta>=infos.range_time:
-            send_info(infos)
+            for i in os.popen('find %s -type f|wc -l'%dir_out):
+                now_file=int(i.strip())-1
+            send_info(infos,now_file,all_file)
             sta=end
 
 def getopt():
@@ -199,7 +218,7 @@ def main():
             datefmt='%Y-%m-%d  %H:%M:%S',
             filename="%s/%s.log"%(args.outdir,args.name),
             filemode='w')
-    thrs=threading.Thread(target=just_warning,args=(infos,))
+    thrs=threading.Thread(target=just_warning,args=(infos,args.indir,args.outdir))
     thrs.setDaemon(True)
     thrs.start()
     cp_info(args.indir,args.outdir,infos,args.name)
