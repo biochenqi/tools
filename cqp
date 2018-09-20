@@ -30,7 +30,7 @@ Usage:cqp [options] SOURCE DEST
 
 <options>
     -r                      copy directories recursively
-    --name                  give the prefix of log file (default: cqp)
+    --name=<prefix>         give the prefix of log file (default: cqp)
     --rangetime=<int>       set interval time to send email. unit:s. (default: 1800)
     --email=<email>         set email address to send letter. (default: auto)
     --resume=<n_rig.log>    breakpoint resume.
