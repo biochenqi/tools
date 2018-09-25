@@ -379,7 +379,11 @@ Try 'cqp -h' for more information.''')
             print('''cqp: missing destination file operand after ‘%s’
 Try 'cqp -h' for more information'''%sys.argv[1])
             sys.exit(0)
-
+    args=Getopt()
+    info=args.getopt()
+    if not os.path.exists(args.ins):
+        print('cqp: cannot stat \'%s\': No such file or directory'%args.ins)
+        sys.exit(0)
     try:
         t1 = time.time()
         time1 = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(t1))
