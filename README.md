@@ -26,3 +26,17 @@ fq_check_v0.2:
     -n     设置线程数,默认：基于系统现有的线程数来分配
     --suffix     设置后缀名，默认：fastq.gz
     --minbase    设置校验的最小碱基数
+
+
+ncbi_get.py: 
+    
+    简介：该脚本用于爬取ncbi上的物种序列和meta信息。
+    
+    使用：python3 ncbi_get.py -o <outdir> --input <txid> --number 100 --prefix <species name>
+    
+    参数：
+    -i     输入物种taid号
+    -o     输出的目录
+    --number     设置线程数,默认为10
+    --timeout    设置socket连接时长，默认为120秒
+    --prefix     输出文件前缀
